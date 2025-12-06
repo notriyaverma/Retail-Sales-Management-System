@@ -1,0 +1,23 @@
+# backend/src/main.py
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+
+from src.routes.sales_routes import router as sales_router
+
+app = FastAPI(title="Retail Sales Management System API")
+
+# Allow frontend (Vite dev server) to call this API
+origins = [
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+app.include_router(sales_router)
