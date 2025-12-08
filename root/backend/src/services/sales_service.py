@@ -105,8 +105,9 @@ def build_sales_query(params: SalesQueryParams):
 def get_sales(session: Session, params: SalesQueryParams):
     stmt, filters = build_sales_query(params)
 
-    # Total count for pagination
+    # Total count for pagination (MUST use same filters)
     count_stmt = select(func.count()).select_from(Sale)
+
     if filters:
         count_stmt = count_stmt.where(and_(*filters))
     total = session.execute(count_stmt).scalar_one()
@@ -118,3 +119,4 @@ def get_sales(session: Session, params: SalesQueryParams):
     rows: Sequence[Sale] = session.execute(stmt).scalars().all()
 
     return rows, total
+

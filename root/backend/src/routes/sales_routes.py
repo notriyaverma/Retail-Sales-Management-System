@@ -9,6 +9,7 @@ from src.services.sales_service import SalesQueryParams, get_sales
 
 router = APIRouter(prefix="/sales", tags=["Sales"])
 
+
 def db():
     s = SessionLocal()
     try:
@@ -16,40 +17,49 @@ def db():
     finally:
         s.close()
 
+
 @router.get("/", response_model=SaleResponse)
 def fetch_sales(
     search: Optional[str] = None,
+
+    # multi-select filters
     customer_region: List[str] = Query(default=[]),
     gender: List[str] = Query(default=[]),
-    age_min: Optional[int] = None,
-    age_max: Optional[int] = None,
     product_category: List[str] = Query(default=[]),
     tags: List[str] = Query(default=[]),
     payment_method: List[str] = Query(default=[]),
+
+    # ranges
+    age_min: Optional[int] = None,
+    age_max: Optional[int] = None,
+
+    # date range
     date_from: Optional[date] = None,
     date_to: Optional[date] = None,
-    sort_by: Optional[str] = "date",
-    sort_dir: Optional[str] = "desc",
+
+    # sorting
+    sort_by: Optional[str] = None,
+
+    # pagination
     page: int = 1,
     page_size: int = 10,
-    session: Session = Depends(db)
-):
 
+    session: Session = Depends(db),
+):
     params = SalesQueryParams(
         search=search,
         regions=customer_region,
         genders=gender,
-        age_min=age_min,
-        age_max=age_max,
         categories=product_category,
         tags=tags,
         payments=payment_method,
+        age_min=age_min,
+        age_max=age_max,
         date_from=date_from,
         date_to=date_to,
         sort_by=sort_by,
-        sort_dir=sort_dir,
         page=page,
-        page_size=page_size
+        page_size=page_size,
     )
 
     rows, total = get_sales(session, params)
