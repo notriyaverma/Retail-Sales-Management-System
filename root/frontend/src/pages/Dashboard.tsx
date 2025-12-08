@@ -1,27 +1,31 @@
-import Filters from "../components/Filters";
-import Table from "../components/Table";
+import { useSales } from "../hooks/useSales";
+import SalesTable from "../components/Table";
 import Pagination from "../components/Pagination";
-import useSales from "../hooks/useSales";
+import Filters from "../components/Filters";
+import Sidebar from "../components/Sidebar";
 
 export default function Dashboard() {
-  const { data, loading, error, page, setPage } = useSales();
+  const { sales, page, totalPages, loading, fetchSales } = useSales();
 
   return (
-    <div className="max-w-7xl mx-auto">
-      <h1 className="text-3xl font-semibold mb-6">Sales Dashboard</h1>
+    <div className="flex min-h-screen bg-gray-100">
+      <Sidebar />
 
-      <Filters />
+      <div className="flex-1 p-6">
+        <Filters />
 
-      {loading && <p>Loading...</p>}
-      {error && <p className="text-red-500">{error}</p>}
+        {loading ? (
+          <p className="text-center py-10 text-gray-600">Loading...</p>
+        ) : (
+          <SalesTable sales={sales} />
+        )}
 
-      {!loading && <Table data={data?.data || []} />}
-
-      <Pagination 
-        totalPages={data?.total_pages || 1} 
-        page={page} 
-        setPage={setPage}
-      />
+        <Pagination
+          page={page}
+          totalPages={totalPages}
+          onChange={fetchSales}
+        />
+      </div>
     </div>
   );
 }

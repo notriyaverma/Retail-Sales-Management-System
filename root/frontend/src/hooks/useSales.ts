@@ -1,20 +1,36 @@
 import { useEffect, useState } from "react";
+import { api } from "../services/api";
+import { Sale, SaleResponse } from "../types/sale";
 
-export default function useSales() {
-  const [data, setData] = useState<any>(null);
+export function useSales() {
+  const [sales, setSales] = useState<Sale[]>([]);
   const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+
+  async function fetchSales(pageNum = 1) {
+    try {
+      setLoading(true);
+      const res = await api.get<SaleResponse>("/sales", {
+        params: { page: pageNum, page_size: 10 },
+      });
+      setSales(res.data.data);
+      setTotalPages(res.data.total_pages);
+      setPage(pageNum);
+    } finally {
+      setLoading(false);
+    }
+  }
 
   useEffect(() => {
-    setLoading(true);
+    fetchSales(1);
+  }, []);
 
-    fetch(`http://127.0.0.1:8000/sales/?page=${page}`)
-      .then(res => res.json())
-      .then(json => setData(json))
-      .catch(() => setError("Failed to load"))
-      .finally(() => setLoading(false));
-  }, [page]);
-
-  return { data, loading, error, page, setPage };
+  return {
+    sales,
+    page,
+    totalPages,
+    loading,
+    fetchSales,
+  };
 }
