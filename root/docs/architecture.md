@@ -68,8 +68,6 @@ The project adheres to a clean, domain-separated folder structure to separate co
 
 ### **Project Structure Overview**
 
-## **🗂️ Project Directory Structure**
-
 * **root/**
     * **backend/**
         * **src/**
@@ -104,3 +102,4 @@ The project adheres to a clean, domain-separated folder structure to separate co
 | `utils` | Backend/Frontend | Houses common helpers, like **DB connection** setup (backend) or formatting (frontend). |
 | `hooks` | Frontend | Custom React hooks that handle **data fetching** and state transformation (`useSales`). |
 | `components` | Frontend | Reusable **UI blocks** (e.g., tables, forms, buttons). |
+
