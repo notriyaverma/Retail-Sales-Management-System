@@ -55,7 +55,6 @@ A **full-stack Retail Sales Management System** designed to efficiently manage s
 
 ### **Pagination**
 
-* **Configuration:** **10 items** per page.
 * **Navigation:** Supports **Next / Previous** page navigation.
 * **State Retention:** Retains applied search, filters, and sorting state.
 * **Metadata:** Includes `total_pages`, `page`, and `page_size` in the response.
