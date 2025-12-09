@@ -1,57 +1,123 @@
-export default function Filters({ 
-  filters = {
-    regions: [],
-    genders: [],
-    categories: [],
-    payments: [],
-    tags: []
-  },
-  setFilters = () => {}
-}) {
-  const regions = ["North", "South", "East", "West", "Central"];
-  const genders = ["Male", "Female"];
-  const categories = ["Beauty", "Electronics", "Clothing"];
-  const payments = ["Cash", "UPI", "Net Banking", "Wallet"];
-  const tags = ["organic", "skincare", "beauty", "gadgets", "wireless"];
+import Dropdown from "./Dropdown";
 
-  const toggle = (key: string, value: string) => {
-    setFilters((prev: any) => {
-      const arr = prev[key];
-      return arr.includes(value)
-        ? { ...prev, [key]: arr.filter((v: string) => v !== value) }
-        : { ...prev, [key]: [...arr, value] };
-    });
-  };
-
-  const renderGroup = (label: string, key: string, options: string[]) => (
-    <div className="mb-4">
-      <p className="font-medium mb-2">{label}</p>
-      <div className="flex flex-wrap gap-2">
-        {options.map((opt) => (
-          <button
-            key={opt}
-            className={`px-3 py-1 rounded-full border ${
-              filters[key].includes(opt)
-                ? "bg-blue-600 text-white border-blue-600"
-                : "bg-gray-100 border-gray-300"
-            }`}
-            onClick={() => toggle(key, opt)}
-            type="button"
-          >
-            {opt}
-          </button>
-        ))}
-      </div>
-    </div>
-  );
+export default function Filters({ filters, setFilters }) {
+  const update = (key: string, value: any) =>
+    setFilters((prev) => ({ ...prev, [key]: value }));
 
   return (
-    <div className="bg-white shadow p-4 rounded-lg mb-6">
-      {renderGroup("Region", "regions", regions)}
-      {renderGroup("Gender", "genders", genders)}
-      {renderGroup("Category", "categories", categories)}
-      {renderGroup("Payment Method", "payments", payments)}
-      {renderGroup("Tags", "tags", tags)}
+    <div className="bg-white p-4 shadow rounded-lg mb-6 flex flex-wrap gap-4 items-end">
+
+      {/* Search Bar */}
+      <div className="flex flex-col flex-1 min-w-[200px]">
+        <label className="text-sm text-gray-600 mb-1">Search</label>
+        <input
+          type="text"
+          value={filters.search}
+          onChange={(e) => update("search", e.target.value)}
+          className="border rounded px-3 py-2 text-sm"
+          placeholder="Name, Phone no."
+        />
+      </div>
+
+      {/* Region */}
+      <Dropdown
+        label="Customer Region"
+        value={filters.regions[0] || ""}
+        options={[
+          { value: "North", label: "North" },
+          { value: "South", label: "South" },
+          { value: "East", label: "East" },
+          { value: "West", label: "West" },
+          { value: "Central", label: "Central" },
+        ]}
+        onChange={(v) => update("regions", v ? [v] : [])}
+      />
+
+      {/* Gender */}
+      <Dropdown
+        label="Gender"
+        value={filters.genders[0] || ""}
+        options={[
+          { value: "Male", label: "Male" },
+          { value: "Female", label: "Female" },
+        ]}
+        onChange={(v) => update("genders", v ? [v] : [])}
+      />
+
+      {/* Age Range */}
+      <Dropdown
+        label="Age Range"
+        value={filters.ageRange}
+        options={[
+          { value: "18-25", label: "18-25" },
+          { value: "26-35", label: "26-35" },
+          { value: "36-50", label: "36-50" },
+          { value: "51-100", label: "51+" },
+        ]}
+        onChange={(v) => update("ageRange", v)}
+      />
+
+      {/* Category */}
+      <Dropdown
+        label="Product Category"
+        value={filters.categories[0] || ""}
+        options={[
+          { value: "Beauty", label: "Beauty" },
+          { value: "Electronics", label: "Electronics" },
+          { value: "Clothing", label: "Clothing" },
+        ]}
+        onChange={(v) => update("categories", v ? [v] : [])}
+      />
+
+      {/* Tags */}
+      <Dropdown
+        label="Tags"
+        value={filters.tags[0] || ""}
+        options={[
+          { value: "organic", label: "organic" },
+          { value: "skincare", label: "skincare" },
+          { value: "beauty", label: "beauty" },
+          { value: "gadgets", label: "gadgets" },
+          { value: "wireless", label: "wireless" },
+        ]}
+        onChange={(v) => update("tags", v ? [v] : [])}
+      />
+
+      {/* Payment */}
+      <Dropdown
+        label="Payment Method"
+        value={filters.payments[0] || ""}
+        options={[
+          { value: "Cash", label: "Cash" },
+          { value: "UPI", label: "UPI" },
+          { value: "Net Banking", label: "Net Banking" },
+          { value: "Wallet", label: "Wallet" },
+        ]}
+        onChange={(v) => update("payments", v ? [v] : [])}
+      />
+
+      {/* Date */}
+      <div className="flex flex-col">
+        <label className="text-sm text-gray-600 mb-1">Date</label>
+        <input
+          type="date"
+          value={filters.dateFrom || ""}
+          onChange={(e) => update("dateFrom", e.target.value || null)}
+          className="border rounded px-3 py-2 text-sm"
+        />
+      </div>
+
+      {/* Sorting */}
+      <Dropdown
+        label="Sort by"
+        value={filters.sortBy}
+        options={[
+          { value: "customer_name", label: "Customer Name (A–Z)" },
+          { value: "date", label: "Date (Newest)" },
+          { value: "final_amount", label: "Amount" },
+        ]}
+        onChange={(v) => update("sortBy", v)}
+      />
     </div>
   );
 }
