@@ -33,5 +33,8 @@ export interface SaleResponse {
   page: number;
   page_size: number;
   total_pages: number;
+  total_units: number;
+  total_amount: number;
+  total_discount: number;
 }
-console.log("SALE TYPES LOADED");
+

@@ -4,7 +4,9 @@ import SalesTable from "../components/Table";
 import Pagination from "../components/Pagination";
 import Filters from "../components/Filters";
 import Sidebar from "../components/Sidebar";
-import Header from "../components/Header"; // You will create this next
+import Header from "../components/Header"; 
+import StatsCards from "../components/StatsCards";
+
 
 export interface FiltersState {
   regions: string[];
@@ -18,6 +20,7 @@ export interface FiltersState {
   dateTo: string | null;
   sortBy: "date" | "quantity" | "name";
   sortDir: "asc" | "desc";
+  pageSize: number;
 }
 
 const initialFilters: FiltersState = {
@@ -32,6 +35,7 @@ const initialFilters: FiltersState = {
   dateTo: null,
   sortBy: "date",
   sortDir: "desc",
+  pageSize: 15,
 };
 
 export default function Dashboard() {
@@ -55,6 +59,12 @@ export default function Dashboard() {
         />
 
         <Filters filters={filters} setFilters={setFilters} />
+        <StatsCards
+          totalUnits={stats.totalUnits}
+          totalAmount={stats.totalAmount}
+          totalDiscount={stats.totalDiscount}
+        />
+
 
         {loading ? (
           <p className="text-center py-10 text-gray-600">Loading...</p>
