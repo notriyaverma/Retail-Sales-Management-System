@@ -33,7 +33,7 @@ const initialFilters: FiltersState = {
   dateTo: null,
   sortBy: "date",
   sortDir: "desc",
-  pageSize: 10,
+  pageSize: 15,
 };
 
 export default function Dashboard() {

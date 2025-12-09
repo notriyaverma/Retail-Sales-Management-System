@@ -1,7 +1,7 @@
 export default function Sidebar() {
   return (
     <div className="w-60 h-screen bg-white shadow-md p-6 flex flex-col">
-      <h1 className="text-xl font-bold mb-8">Sales Management</h1>
+      <h1 className="text-xl font-bold mb-8">Vault</h1>
 
       <nav className="flex flex-col gap-4">
         <SidebarItem label="Dashboard" active />

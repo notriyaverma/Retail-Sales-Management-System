@@ -1,30 +1,44 @@
-# backend/src/utils/load_data.py
+import sys
+import traceback
+from pathlib import Path
 import pandas as pd
 from datetime import datetime
 from sqlalchemy.orm import Session
 from src.db import Base, engine, SessionLocal
 from src.models.sale import Sale
 
-CSV_PATH = "data/sales.csv"  # put your CSV here (backend/data/sales.csv)
+# resolve CSV relative to backend/src (works regardless of cwd)
+BASE_DIR = Path(__file__).resolve().parents[2]  # backend/src -> parents[2] = backend
+CSV_PATH = BASE_DIR / "data" / "sales.csv"
 
 def parse_date(val: str | None):
     if not val or pd.isna(val):
         return None
-    # tweak format if necessary
     try:
         return datetime.strptime(val, "%Y-%m-%d").date()
     except ValueError:
         return None
 
 def load_csv():
+    if not CSV_PATH.exists():
+        print(f"ERROR: CSV not found at {CSV_PATH}", file=sys.stderr)
+        return
+
+    print(f"Loading CSV from {CSV_PATH}")
     Base.metadata.drop_all(bind=engine)
     Base.metadata.create_all(bind=engine)
 
-    df = pd.read_csv(CSV_PATH)
+    try:
+        df = pd.read_csv(CSV_PATH)
+    except Exception:
+        print("ERROR: Failed to read CSV", file=sys.stderr)
+        traceback.print_exc()
+        return
 
     session: Session = SessionLocal()
     try:
         records = []
+        total = 0
         for _, row in df.iterrows():
             sale = Sale(
                 transaction_id=str(row.get("Transaction ID", "")),
@@ -55,15 +69,21 @@ def load_csv():
                 employee_name=row.get("Employee Name"),
             )
             records.append(sale)
-
-            if len(records) >= 5000:      # batch insert for speed
-                session.bulk_save_objects(records)
+            if len(records) >= 5000:
+                session.add_all(records)
                 session.commit()
+                total += len(records)
                 records.clear()
 
         if records:
-            session.bulk_save_objects(records)
+            session.add_all(records)
             session.commit()
+            total += len(records)
+
+        print(f"Inserted {total} records into DB")
+    except Exception:
+        print("ERROR: Exception while writing to DB", file=sys.stderr)
+        traceback.print_exc()
     finally:
         session.close()
 

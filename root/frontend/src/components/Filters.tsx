@@ -1,6 +1,6 @@
 import Dropdown from "./Dropdown";
 
-export default function Filters({ filters, setFilters }) {
+export default function Filters({ filters, setFilters }: { filters: any; setFilters: any }) {
   const update = (key: string, value: string[]) =>
     setFilters((prev: any) => ({ ...prev, [key]: value }));
 

@@ -1,7 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-
-from src.routes.sales_routes import router as sales_router
+from src.routes.sales_routes import router
 
 app = FastAPI(title="Retail Sales Management System API")
 
@@ -19,4 +18,4 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(sales_router)
+app.include_router(router)

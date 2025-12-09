@@ -1,10 +1,9 @@
 from datetime import date
 from typing import Sequence
-
 from sqlalchemy.orm import Session
 from sqlalchemy import select, func, and_, or_
-
 from src.models.sale import Sale
+
 
 
 class SalesQueryParams:

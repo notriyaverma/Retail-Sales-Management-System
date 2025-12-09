@@ -1,7 +1,10 @@
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 
-from src.utils.db import get_db
+from src.services.sales_service import get_sales, SalesQueryParams
+from src.schemas.sale import SaleResponse
+from src.db import get_db
+
 from src.services.sales_service import (
     SalesQueryParams,
     get_sales
