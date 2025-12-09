@@ -1,4 +1,13 @@
-export default function Filters({ filters, setFilters }) {
+export default function Filters({ 
+  filters = {
+    regions: [],
+    genders: [],
+    categories: [],
+    payments: [],
+    tags: []
+  },
+  setFilters = () => {}
+}) {
   const regions = ["North", "South", "East", "West", "Central"];
   const genders = ["Male", "Female"];
   const categories = ["Beauty", "Electronics", "Clothing"];

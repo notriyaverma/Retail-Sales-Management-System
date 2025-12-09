@@ -34,3 +34,4 @@ export interface SaleResponse {
   page_size: number;
   total_pages: number;
 }
+console.log("SALE TYPES LOADED");
