@@ -4,23 +4,38 @@ import SalesTable from "../components/Table";
 import Pagination from "../components/Pagination";
 import Filters from "../components/Filters";
 import Sidebar from "../components/Sidebar";
-import SummaryCards from "../components/SummaryCards";
-import type { FiltersState } from "../types/filters";
+import Header from "../components/Header"; // You will create this next
+
+export interface FiltersState {
+  regions: string[];
+  genders: string[];
+  categories: string[];
+  payments: string[];
+  tags: string[];
+  search: string;
+  ageRange: string | null;
+  dateFrom: string | null;
+  dateTo: string | null;
+  sortBy: "date" | "quantity" | "name";
+  sortDir: "asc" | "desc";
+}
+
+const initialFilters: FiltersState = {
+  regions: [],
+  genders: [],
+  categories: [],
+  payments: [],
+  tags: [],
+  search: "",
+  ageRange: null,
+  dateFrom: null,
+  dateTo: null,
+  sortBy: "date",
+  sortDir: "desc",
+};
 
 export default function Dashboard() {
-  const [filters, setFilters] = useState<FiltersState>({
-    regions: [],
-    genders: [],
-    categories: [],
-    payments: [],
-    tags: [],
-    search: "",
-    ageRange: null,
-    dateFrom: null,
-    dateTo: null,
-    sortBy: "customer_name",
-    sortDir: "asc",
-  });
+  const [filters, setFilters] = useState<FiltersState>(initialFilters);
 
   const { sales, page, totalPages, loading, fetchSales } = useSales(filters);
 
@@ -28,15 +43,18 @@ export default function Dashboard() {
     <div className="flex min-h-screen bg-gray-100">
       <Sidebar />
 
-      <div className="flex-1 p-6 space-y-6">
-          
-        <h1 className="text-3xl font-semibold mb-6">
-          Sales Management System
-        </h1>
+      <main className="flex-1 p-6">
+
+        <Header
+          search={filters.search}
+          sortBy={filters.sortBy}
+          sortDir={filters.sortDir}
+          onSearch={(v) => setFilters({ ...filters, search: v })}
+          onSortBy={(v) => setFilters({ ...filters, sortBy: v })}
+          onSortDir={(v) => setFilters({ ...filters, sortDir: v })}
+        />
 
         <Filters filters={filters} setFilters={setFilters} />
-
-        <SummaryCards sales={sales} />
 
         {loading ? (
           <p className="text-center py-10 text-gray-600">Loading...</p>
@@ -45,7 +63,7 @@ export default function Dashboard() {
         )}
 
         <Pagination page={page} totalPages={totalPages} onChange={fetchSales} />
-      </div>
+      </main>
     </div>
   );
 }

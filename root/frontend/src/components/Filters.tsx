@@ -1,123 +1,201 @@
 import Dropdown from "./Dropdown";
+import type { FiltersState } from "../pages/Dashboard";
 
-export default function Filters({ filters, setFilters }) {
-  const update = (key: string, value: any) =>
+interface FiltersProps {
+  filters: FiltersState;
+  setFilters: React.Dispatch<React.SetStateAction<FiltersState>>;
+}
+
+const AGE_RANGES = ["18-25", "26-35", "36-50", "51-60", "60+"];
+
+const SORT_OPTIONS = [
+  {
+    label: "Date (Newest first)",
+    value: "date_desc",
+    sortBy: "date" as const,
+    sortDir: "desc" as const,
+  },
+  {
+    label: "Quantity (High to low)",
+    value: "quantity_desc",
+    sortBy: "quantity" as const,
+    sortDir: "desc" as const,
+  },
+  {
+    label: "Customer Name (A–Z)",
+    value: "name_asc",
+    sortBy: "name" as const,
+    sortDir: "asc" as const,
+  },
+];
+
+export default function Filters({ filters, setFilters }: FiltersProps) {
+  const regions = ["North", "South", "East", "West", "Central"];
+  const genders = ["Male", "Female"];
+  const categories = ["Beauty", "Electronics", "Clothing"];
+  const payments = ["Cash", "UPI", "Net Banking", "Wallet"];
+  const tags = ["organic", "skincare", "beauty", "gadgets", "wireless"];
+
+  const toggleMulti = (key: keyof FiltersState, value: string) => {
+    setFilters((prev) => {
+      const current = prev[key] as string[];
+      const exists = current.includes(value);
+      return {
+        ...prev,
+        [key]: exists
+          ? current.filter((v) => v !== value)
+          : [...current, value],
+      };
+    });
+  };
+
+  const update = (key: keyof FiltersState, value: any) => {
     setFilters((prev) => ({ ...prev, [key]: value }));
+  };
+
+  const renderTagGroup = (
+    label: string,
+    key: keyof FiltersState,
+    options: string[]
+  ) => {
+    const selected = filters[key] as string[];
+
+    return (
+      <div>
+        <p className="text-xs font-medium text-gray-600 mb-2">{label}</p>
+        <div className="flex flex-wrap gap-2">
+          {options.map((opt) => (
+            <button
+              key={opt}
+              type="button"
+              onClick={() => toggleMulti(key, opt)}
+              className={[
+                "px-3 py-1 rounded-full border text-xs",
+                selected.includes(opt)
+                  ? "bg-blue-600 text-white border-blue-600"
+                  : "bg-gray-100 text-gray-700 border-gray-300",
+              ].join(" ")}
+            >
+              {opt}
+            </button>
+          ))}
+        </div>
+      </div>
+    );
+  };
+
+  const currentSortKey = `${filters.sortBy}_${filters.sortDir}`;
+  const sortDropdownValue = SORT_OPTIONS.find(
+    (opt) => opt.value === currentSortKey
+  )
+    ? currentSortKey
+    : "date_desc";
 
   return (
-    <div className="bg-white p-4 shadow rounded-lg mb-6 flex flex-wrap gap-4 items-end">
+    <section className="bg-white shadow p-4 rounded-lg mb-6 space-y-4">
+      {/* Top row: search, date range, age range, sorting */}
+      <div className="flex flex-wrap gap-3 items-end">
+        {/* Search */}
+        <div className="flex-1 min-w-[220px]">
+          <label className="block text-xs font-medium text-gray-600 mb-1">
+            Search
+          </label>
+          <input
+            type="text"
+            value={filters.search}
+            onChange={(e) => update("search", e.target.value)}
+            placeholder="Search by customer or phone"
+            className="w-full border rounded-md px-3 py-2 text-sm"
+          />
+        </div>
 
-      {/* Search Bar */}
-      <div className="flex flex-col flex-1 min-w-[200px]">
-        <label className="text-sm text-gray-600 mb-1">Search</label>
-        <input
-          type="text"
-          value={filters.search}
-          onChange={(e) => update("search", e.target.value)}
-          className="border rounded px-3 py-2 text-sm"
-          placeholder="Name, Phone no."
+        {/* Date from */}
+        <div>
+          <label className="block text-xs font-medium text-gray-600 mb-1">
+            From
+          </label>
+          <input
+            type="date"
+            value={filters.dateFrom || ""}
+            onChange={(e) =>
+              update("dateFrom", e.target.value || null)
+            }
+            className="border rounded-md px-3 py-2 text-sm"
+          />
+        </div>
+
+        {/* Date to */}
+        <div>
+          <label className="block text-xs font-medium text-gray-600 mb-1">
+            To
+          </label>
+          <input
+            type="date"
+            value={filters.dateTo || ""}
+            onChange={(e) =>
+              update("dateTo", e.target.value || null)
+            }
+            className="border rounded-md px-3 py-2 text-sm"
+          />
+        </div>
+
+        {/* Age range dropdown */}
+        <Dropdown
+          label="Age Range"
+          value={filters.ageRange}
+          options={AGE_RANGES.map((r) => ({ label: r, value: r }))}
+          onChange={(v) => update("ageRange", v || null)}
         />
+
+        {/* Sorting dropdown */}
+        <Dropdown
+          label="Sort"
+          value={sortDropdownValue}
+          options={SORT_OPTIONS}
+          onChange={(v) => {
+            const option = SORT_OPTIONS.find((o) => o.value === v);
+            if (!option) return;
+            setFilters((prev) => ({
+              ...prev,
+              sortBy: option.sortBy,
+              sortDir: option.sortDir,
+            }));
+          }}
+        />
+
+        {/* Clear all */}
+        <button
+          type="button"
+          onClick={() =>
+            setFilters((prev) => ({
+              ...prev,
+              regions: [],
+              genders: [],
+              categories: [],
+              payments: [],
+              tags: [],
+              search: "",
+              ageRange: null,
+              dateFrom: null,
+              dateTo: null,
+              sortBy: "date",
+              sortDir: "desc",
+            }))
+          }
+          className="ml-auto px-3 py-2 border rounded-md text-xs text-gray-700 bg-gray-50"
+        >
+          Clear all
+        </button>
       </div>
 
-      {/* Region */}
-      <Dropdown
-        label="Customer Region"
-        value={filters.regions[0] || ""}
-        options={[
-          { value: "North", label: "North" },
-          { value: "South", label: "South" },
-          { value: "East", label: "East" },
-          { value: "West", label: "West" },
-          { value: "Central", label: "Central" },
-        ]}
-        onChange={(v) => update("regions", v ? [v] : [])}
-      />
-
-      {/* Gender */}
-      <Dropdown
-        label="Gender"
-        value={filters.genders[0] || ""}
-        options={[
-          { value: "Male", label: "Male" },
-          { value: "Female", label: "Female" },
-        ]}
-        onChange={(v) => update("genders", v ? [v] : [])}
-      />
-
-      {/* Age Range */}
-      <Dropdown
-        label="Age Range"
-        value={filters.ageRange}
-        options={[
-          { value: "18-25", label: "18-25" },
-          { value: "26-35", label: "26-35" },
-          { value: "36-50", label: "36-50" },
-          { value: "51-100", label: "51+" },
-        ]}
-        onChange={(v) => update("ageRange", v)}
-      />
-
-      {/* Category */}
-      <Dropdown
-        label="Product Category"
-        value={filters.categories[0] || ""}
-        options={[
-          { value: "Beauty", label: "Beauty" },
-          { value: "Electronics", label: "Electronics" },
-          { value: "Clothing", label: "Clothing" },
-        ]}
-        onChange={(v) => update("categories", v ? [v] : [])}
-      />
-
-      {/* Tags */}
-      <Dropdown
-        label="Tags"
-        value={filters.tags[0] || ""}
-        options={[
-          { value: "organic", label: "organic" },
-          { value: "skincare", label: "skincare" },
-          { value: "beauty", label: "beauty" },
-          { value: "gadgets", label: "gadgets" },
-          { value: "wireless", label: "wireless" },
-        ]}
-        onChange={(v) => update("tags", v ? [v] : [])}
-      />
-
-      {/* Payment */}
-      <Dropdown
-        label="Payment Method"
-        value={filters.payments[0] || ""}
-        options={[
-          { value: "Cash", label: "Cash" },
-          { value: "UPI", label: "UPI" },
-          { value: "Net Banking", label: "Net Banking" },
-          { value: "Wallet", label: "Wallet" },
-        ]}
-        onChange={(v) => update("payments", v ? [v] : [])}
-      />
-
-      {/* Date */}
-      <div className="flex flex-col">
-        <label className="text-sm text-gray-600 mb-1">Date</label>
-        <input
-          type="date"
-          value={filters.dateFrom || ""}
-          onChange={(e) => update("dateFrom", e.target.value || null)}
-          className="border rounded px-3 py-2 text-sm"
-        />
+      {/* Multi-select chips */}
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        {renderTagGroup("Customer Region", "regions", regions)}
+        {renderTagGroup("Gender", "genders", genders)}
+        {renderTagGroup("Product Category", "categories", categories)}
+        {renderTagGroup("Payment Method", "payments", payments)}
+        {renderTagGroup("Tags", "tags", tags)}
       </div>
-
-      {/* Sorting */}
-      <Dropdown
-        label="Sort by"
-        value={filters.sortBy}
-        options={[
-          { value: "customer_name", label: "Customer Name (A–Z)" },
-          { value: "date", label: "Date (Newest)" },
-          { value: "final_amount", label: "Amount" },
-        ]}
-        onChange={(v) => update("sortBy", v)}
-      />
-    </div>
+    </section>
   );
 }
