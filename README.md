@@ -76,3 +76,14 @@ pip install -r requirements.txt
 
 # Start the Uvicorn server (with auto-reload for development)
 uvicorn backend.src.main:app --reload
+```
+
+### **2.Fronted Setup (FastAPI)**
+
+To run the frontend server:
+
+```bash
+cd frontend
+npm install
+npm run dev
+
