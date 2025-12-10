@@ -9,6 +9,6 @@ export async function fetchSales(params = {}) {
 
 
 export const api = axios.create({
-  baseURL: "http://localhost:8000", // FastAPI backend
+  baseURL: "https://retail-sales-backend-ufwa.onrender.com", // FastAPI backend
 });
 
