@@ -30,7 +30,7 @@ export function useSales(filters: FiltersState) {
   async function fetchSales(pageNum = 1) {
     const params: any = {
       page: pageNum,
-      page_size: 13,
+      page_size: 10,
       sort_by: filters.sortBy,
       sort_dir: filters.sortDir,
     };
