@@ -22,7 +22,7 @@ A **full-stack Retail Sales Management System** designed to efficiently manage s
 | **Frontend** | **React**, **TypeScript**, **Vite**, **TailwindCSS** |
 | **Backend** | **FastAPI**, **SQLAlchemy**, **Uvicorn** |
 | **Database** | **SQLite** |
-| **Deployment** | **Render** (Backend), **Vercel** (Frontend) |
+| **Deployment** | **Render** |
 
 ---
 
